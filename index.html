@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uai Dashboard</title>
+  <link rel="stylesheet" href="https://use.typekit.net/lvv6fgs.css">
+  <style>
+    :root {
+      --brand-font: 'omnes-variable', 'Segoe UI', system-ui, sans-serif;
+      font-family: var(--brand-font);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    
+    body {
+      background-color: #760f0e; /* Vinho */
+      color: #f8f8f8;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* --- NOVO HEADER ORB (Medalhão) --- */
+    header {
+      padding: 0.5rem 2rem;
+      height: 70px;
+      background-color: #760f0e;
+      border-bottom: 1px solid #f1d286;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 100;
+    }
+
+    /* Logo Deformada (Orb) */
+    .header-logo-orb {
+      position: absolute;
+      top: 0;
+      left: 30px;
+      width: 110px;
+      height: 120px;
+      background: radial-gradient(circle at 50% 100%, #760f0e 60%, #5a0807 100%);
+      border-radius: 0 0 55px 55px;
+      border-left: 1px solid #f1d286;
+      border-right: 1px solid #f1d286;
+      border-bottom: 3px solid #f1d286;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 15px;
+      z-index: 101;
+      transition: transform 0.3s ease;
+    }
+    
+    .header-logo-orb:hover { transform: translateY(5px); }
+
+    .header-logo-orb img {
+      height: 85px;
+      width: auto;
+      filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
+    }
+
+    /* Navegação empurrada para a direita */
+    nav { 
+      margin-left: 140px; 
+      display: flex; 
+      gap: 20px; 
+    }
+    nav a {
+      text-decoration: none;
+      color: #f8f8f8;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: all 0.2s;
+    }
+    nav a:hover { opacity: 1; color: #f1d286; }
+    nav a.active { opacity: 1; color: #f1d286; border-bottom: 2px solid #f1d286; padding-bottom: 2px; }
+    nav a {
+      text-decoration: none;
+      color: #f8f8f8;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: all 0.2s;
+    }
+    nav a:hover { opacity: 1; color: #f1d286; }
+    nav a.active { opacity: 1; color: #f1d286; border-bottom: 2px solid #f1d286; padding-bottom: 2px; }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    /* --- HERO / KPI GRID --- */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* 3 Colunas iguais */
+      gap: 20px;
+    }
+
+    .kpi-card {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(241, 210, 134, 0.15);
+      border-radius: 16px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: transform 0.2s ease, border-color 0.2s;
+    }
+    .kpi-card:hover {
+      border-color: rgba(241, 210, 134, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .kpi-title { font-size: 0.85rem; color: #ccc; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .kpi-metric { font-size: 2.2rem; font-weight: bold; color: #f8f8f8; }
+    .kpi-trend { font-size: 0.8rem; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
+    .trend-up { color: #f1d286; }
+    .trend-neutral { color: #ccc; }
+
+    .gold-text { color: #f1d286; }
+
+    /* STATUS CARD (O maior da direita) */
+    .status-card {
+      background: linear-gradient(135deg, rgba(241, 210, 134, 0.1) 0%, rgba(0,0,0,0.3) 100%);
+      border: 1px solid #f1d286;
+    }
+    .status-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .status-badge { background: #f1d286; color: #760f0e; font-weight: bold; font-size: 0.7rem; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; }
+
+    /* --- MAIN CHART SECTION --- */
+    .main-chart-section {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      position: relative;
+      overflow: hidden; /* Para os dots não vazarem */
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      z-index: 2;
+    }
+    .chart-title { font-size: 1.4rem; color: #f1d286; margin: 0; font-weight: 600; }
+    .chart-legend { display: flex; gap: 20px; }
+    .legend-box { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #ccc; text-transform: uppercase; }
+    .leg-color { width: 12px; height: 12px; border-radius: 3px; }
+
+    /* --- SHORTCUTS NAVIGATION --- */
+    /* Container do Carrossel */
+    .shortcuts-grid {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      
+      /* Padding ajustado: 10px topo (espaço p/ hover), 20px baixo (espaço scroll) */
+      padding: 10px 0 20px 0;
+      
+      position: relative;
+      scrollbar-width: none;
+    }
+    .shortcuts-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Cards Individuais */
+    .shortcut-btn {
+      min-width: 320px;
+      flex: 0 0 auto;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.3s;
+    }
+    .shortcut-btn:hover {
+      background: rgba(241, 210, 134, 0.1);
+      border-color: #f1d286;
+      transform: translateY(-2px);
+    }
+
+    /* Tipografia Ajustada */
+    .shortcut-info h3 { 
+      margin: 0; 
+      font-size: 1.1rem; 
+      color: #f8f8f8;
+      font-weight: 500;
+    }
+    .shortcut-info p { margin: 5px 0 0 0; font-size: 0.8rem; color: #ccc; }
+    .arrow-icon { color: #f1d286; font-size: 1.5rem; opacity: 0.5; transition: 0.3s; }
+    .shortcut-btn:hover .arrow-icon { opacity: 1; transform: translateX(5px); }
+
+    /* D3/SVG Styles */
+    .axis text { fill: #ccc; font-family: var(--brand-font); opacity: 0.7; }
+    .axis line, .axis path { stroke: rgba(255,255,255,0.1); }
+    .grid-line { stroke: rgba(255,255,255,0.05); stroke-dasharray: 4; }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-left: 4px solid #f1d286;
+      padding-left: 15px;
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      color: #f1d286;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    @keyframes cosmic-drift {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(2px, -3px); }
+      50% { transform: translate(-2px, 2px); }
+      75% { transform: translate(3px, 1px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    .floating-dot {
+      animation-name: cosmic-drift;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+    }
+    
+    /* Animation Dots (Cosmic) */
+    .bg-dots { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+    .bg-dot { fill: #f8f8f8; opacity: 0.1; }
+
+    @keyframes drift {
+      0% { transform: translate(0,0); }
+      50% { transform: translate(10px, -10px); }
+      100% { transform: translate(0,0); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-logo-orb">
+      <img src="SVG/UaiLogoNoite.svg" alt="Atlas System v1.0">
+    </div>
+    <nav>
+      <a href="index.html" class="active">Visão Geral</a>
+      <a href="resultados.html">Anúncios</a>
+      <a href="conteudo.html">Conteúdo</a>
+      <a href="visibilidade.html">Visibilidade</a>
+      <a href="operacao.html">Operação</a>
+      <a href="vendas.html">Vendas</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <div class="page-header">
+      <h2 style="color: #f8f8f8; font-size: 2.4rem; margin: 0 0 20px 0;">Visão Geral</h2>
+    </div>
+
+    <div class="hero-grid">
+    <div class="kpi-card">
+      <span class="kpi-title">Faturamento de Anúncios</span>
+      <span class="kpi-metric gold-text">R$ 2.1k</span>
+    </div>
+
+      <div class="kpi-card">
+        <span class="kpi-title">ROAS Geral</span>
+        <span class="kpi-metric">3.8x</span>
+        <span class="kpi-trend trend-neutral">■ Estável na meta</span>
+      </div>
+
+      <div class="kpi-card">
+        <span class="kpi-title">Alcance da Marca</span>
+        <span class="kpi-metric">40.108</span>
+      </div>
+    </div>
+
+    <div class="main-chart-section">
+      <svg class="bg-dots" id="background-dots"></svg>
+
+      <div style="flex: 1; display: flex; flex-direction: column; z-index: 2;">
+        <div class="section-header">
+          <h2 class="section-title">Funil de Conversão de Vendas</h2>
+        </div>
+        <div id="funnel-chart" style="width: 100%; height: 300px;"></div>
+      </div>
+    </div>
+
+    <div class="shortcuts-grid" id="shortcuts-container">
+      <a href="resultados.html" class="shortcut-btn">
+        <div class="shortcut-info">
+          <h3>Performance de Anúncios</h3>
+          <p>CPC, CPM, ROAS e ROI.</p>
+        </div>
+        <span class="arrow-icon">→</span>
+      </a>
+
+      <a href="conteudo.html" class="shortcut-btn">
+        <div class="shortcut-info">
+          <h3>Conteúdo & Criativos</h3>
+          <p>Análise de posts e formatos.</p>
+        </div>
+        <span class="arrow-icon">→</span>
+      </a>
+
+      <a href="visibilidade.html" class="shortcut-btn">
+        <div class="shortcut-info">
+          <h3>Visibilidade da Marca</h3>
+          <p>Alcance, impressões e seguidores.</p>
+        </div>
+        <span class="arrow-icon">→</span>
+      </a>
+
+      <a href="operacao.html" class="shortcut-btn">
+        <div class="shortcut-info">
+          <h3>Saúde da Operação</h3>
+          <p>Monitoramento de status e uptime.</p>
+        </div>
+        <span class="arrow-icon">→</span>
+      </a>
+
+      <a href="vendas.html" class="shortcut-btn">
+        <div class="shortcut-info">
+          <h3>Resumo de Vendas</h3>
+          <p>Performance comercial por unidade.</p>
+        </div>
+        <span class="arrow-icon">→</span>
+      </a>
+    </div>
+
+  </main>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="NAJA® Scope/NAJA® Scope.js"></script>
+
+  <script>
+    const DATA_UNIFIED = {
+      funnel: [
+        { step: "Impressões Totais", value: 97380 },
+        { step: "Contas Alcançadas", value: 40108 },
+        { step: "Mensagens Recebidas", value: 1088 },
+        { step: "Vendas Realizadas", value: 4 }
+      ]
+    };
+
+    const COLORS = { gold: "#f1d286", deep: "#760f0e", bar: "#f8f8f8" };
+
+    // --- BACKGROUND COSMIC DUST ---
+    function renderBgDots() {
+        const svg = d3.select("#background-dots");
+        const width = document.querySelector('.main-chart-section').offsetWidth;
+        const height = document.querySelector('.main-chart-section').offsetHeight;
+        
+        const dotCount = 40;
+        const dots = Array.from({length: dotCount}, () => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: Math.random() * 2 + 1,
+            dur: Math.random() * 10 + 5
+        }));
+
+        svg.selectAll("circle").data(dots).join("circle")
+           .attr("cx", d => d.x).attr("cy", d => d.y).attr("r", d => d.r)
+           .attr("class", "bg-dot")
+           .style("animation", d => `drift ${d.dur}s infinite ease-in-out alternate`);
+    }
+
+    renderBgDots();
+    window.addEventListener('resize', () => {
+      renderBgDots();
+      renderFunnelChart();
+    });
+
+  </script>
+
+  <script>
+    function renderFunnelChart() {
+      const container = document.getElementById('funnel-chart');
+      if (!container) return;
+      d3.select("#funnel-chart").selectAll("*").remove();
+      const width = container.offsetWidth;
+      const height = container.offsetHeight;
+      const margin = { top: 40, right: 20, bottom: 40, left: 20 };
+
+      const svg = d3.select("#funnel-chart").append("svg").attr("width", width).attr("height", height);
+      const data = DATA_UNIFIED.funnel;
+      if (!data || !data.length) return;
+
+      const maxValue = d3.max(data, d => d.value) || 1;
+      const maxDots = 300;
+      const columnWidth = (width - margin.left - margin.right) / data.length;
+      const dotRadius = 3;
+      const labelOffset = 20;
+      const valueOffset = 30;
+      const gridStartY = margin.top + labelOffset;
+      const gridHeight = Math.max(0, height - gridStartY - margin.bottom - valueOffset);
+
+      let particles = [];
+
+      data.forEach((step, index) => {
+        const columnStartX = margin.left + columnWidth * index;
+        const count = step.value === 0 ? 0 : Math.max(1, Math.round((step.value / maxValue) * maxDots));
+
+        const group = svg.append("g").attr("transform", `translate(${columnStartX},0)`);
+
+        group.append("text")
+          .attr("x", columnWidth / 2).attr("y", margin.top - 10)
+          .attr("text-anchor", "middle").attr("fill", "#f8f8f8")
+          .style("font-size", "16px").style("font-weight", "600").style("font-family", "var(--brand-font)")
+          .style("letter-spacing", "0.5px")
+          .text(step.step);
+
+        const dotsData = Array.from({ length: count }, (_, idx) => {
+          const randX = (Math.random() * (columnWidth - 30)) + 15;
+          const randY = (Math.random() * (gridHeight - 10)) + 5;
+          const globalX = columnStartX + randX;
+          const globalY = gridStartY + randY;
+          
+          return {
+            id: idx,
+            baseX: randX,
+            baseY: randY,
+            x: randX,
+            y: randY,
+            globalBaseX: globalX,
+            globalBaseY: globalY,
+            vx: 0,
+            vy: 0
+          };
+        });
+
+        const dotGroup = group.append("g").attr("transform", `translate(0,${gridStartY})`);
+        const circles = dotGroup.selectAll("circle").data(dotsData).join("circle")
+          .attr("cx", d => d.x)
+          .attr("cy", d => d.y)
+          .attr("r", dotRadius)
+          .attr("fill", "#f8f8f8")
+          .attr("opacity", 0.6)
+          .classed("floating-dot", true)
+          .style("animation-duration", () => `${Math.random() * (8 - 4) + 4}s`)
+          .style("animation-delay", () => `-${Math.random() * 5}s`)
+          .style("animation-direction", () => {
+             const directions = ['normal', 'reverse', 'alternate', 'alternate-reverse'];
+             return directions[Math.floor(Math.random() * directions.length)];
+          });
+
+        circles.each(function(d) {
+          d.element = this;
+          particles.push(d);
+        });
+
+        group.append("text")
+          .attr("x", columnWidth / 2).attr("y", gridStartY + gridHeight + 45)
+          .attr("text-anchor", "middle").attr("fill", COLORS.gold)
+          .style("font-size", "18px").style("font-weight", "700").style("font-family", "var(--brand-font)")
+          .text(step.value.toLocaleString('pt-BR'));
+      });
+
+      // --- MOTOR FÍSICO "REAÇÃO A MOVIMENTO" (AJUSTE FINO) ---
+      let mouse = { x: -1000, y: -1000 };
+      let lagMouse = { x: -1000, y: -1000 };
+
+      // Configurações: Mais preciso e sutil
+      const REPEL_RADIUS = 60;
+      const REPEL_FORCE_BASE = 0.2;
+      const FRICTION = 0.85;
+      const RETURN_FORCE = 0.005;
+      const LAG_FACTOR = 0.15;
+
+      svg.on("mousemove", function(event) {
+        const [mx, my] = d3.pointer(event, this);
+        mouse.x = mx;
+        mouse.y = my;
+      });
+      
+      svg.on("mouseleave", function() {
+        mouse.x = -1000;
+        mouse.y = -1000;
+      });
+
+      const timer = d3.timer(() => {
+        if (mouse.x === -1000) {
+            lagMouse.x += (-1000 - lagMouse.x) * 0.1;
+            lagMouse.y += (-1000 - lagMouse.y) * 0.1;
+        } else {
+            lagMouse.x += (mouse.x - lagMouse.x) * LAG_FACTOR;
+            lagMouse.y += (mouse.y - lagMouse.y) * LAG_FACTOR;
+        }
+
+        const dxMouse = mouse.x - lagMouse.x;
+        const dyMouse = mouse.y - lagMouse.y;
+        
+        let moveIntensity = Math.sqrt(dxMouse*dxMouse + dyMouse*dyMouse) / 15; 
+        
+        if (moveIntensity > 4) moveIntensity = 4;
+        if (moveIntensity < 0.1) moveIntensity = 0; 
+
+        particles.forEach(p => {
+          const currentGlobalX = p.globalBaseX + (p.x - p.baseX);
+          const currentGlobalY = p.globalBaseY + (p.y - p.baseY);
+
+          const dx = currentGlobalX - lagMouse.x;
+          const dy = currentGlobalY - lagMouse.y;
+          const distSq = dx*dx + dy*dy;
+
+          if (moveIntensity > 0 && distSq < REPEL_RADIUS * REPEL_RADIUS) {
+            const dist = Math.sqrt(distSq);
+            const force = (REPEL_RADIUS - dist) / REPEL_RADIUS;
+            const angle = Math.atan2(dy, dx);
+            
+            const totalForce = force * REPEL_FORCE_BASE * moveIntensity;
+
+            p.vx += Math.cos(angle) * totalForce;
+            p.vy += Math.sin(angle) * totalForce;
+          }
+
+          const homeDx = p.baseX - p.x;
+          const homeDy = p.baseY - p.y;
+          p.vx += homeDx * RETURN_FORCE;
+          p.vy += homeDy * RETURN_FORCE;
+
+          p.vx *= FRICTION;
+          p.vy *= FRICTION;
+
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (Math.abs(p.vx) > 0.001 || Math.abs(p.vy) > 0.001 || Math.abs(p.x - p.baseX) > 0.1) {
+             d3.select(p.element).attr("cx", p.x).attr("cy", p.y);
+          }
+        });
+      });
+    }
+
+    renderFunnelChart();
+  </script>
+
+  <script>
+    // --- SCROLL INTERATIVO (HOVER EDGE - CALIBRADO) ---
+    const container = document.getElementById('shortcuts-container');
+    
+    let scrollSpeed = 0;
+    let isScrolling = false;
+    let animationId = null;
+
+    container.addEventListener('mousemove', (e) => {
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const width = rect.width;
+      
+      const buffer = 120; // Zona ativa
+      
+      if (x > width - buffer) {
+        const intensity = (x - (width - buffer)) / buffer;
+        // Velocidade Calibrada: Base 8 (confortável) + até 12 extras (rápido se encostar)
+        scrollSpeed = 8 + (intensity * 12); 
+        if (!isScrolling) {
+          isScrolling = true;
+          loopScroll(1);
+        }
+      } else if (x < buffer) {
+        const intensity = (buffer - x) / buffer;
+        scrollSpeed = 8 + (intensity * 12);
+        if (!isScrolling) {
+          isScrolling = true;
+          loopScroll(-1);
+        }
+      } else {
+        isScrolling = false;
+        if (animationId) cancelAnimationFrame(animationId);
+      }
+    });
+
+    container.addEventListener('mouseleave', () => {
+      isScrolling = false;
+      if (animationId) cancelAnimationFrame(animationId);
+    });
+
+    function loopScroll(direction) {
+      if (!isScrolling) return;
+      
+      container.scrollLeft += direction * scrollSpeed;
+      animationId = requestAnimationFrame(() => loopScroll(direction));
+    }
+  </script>
+</body>
+</html>

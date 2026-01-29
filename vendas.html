@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uai Dashboard</title>
+  <link rel="stylesheet" href="https://use.typekit.net/lvv6fgs.css">
+  <style>
+    :root {
+      --brand-font: 'omnes-variable', 'Segoe UI', system-ui, sans-serif;
+      font-family: var(--brand-font);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    
+    body {
+      background-color: #760f0e; /* Vinho */
+      color: #f8f8f8;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* --- NOVO HEADER ORB (Medalhão) --- */
+    header {
+      padding: 0.5rem 2rem;
+      height: 70px;
+      background-color: #760f0e;
+      border-bottom: 1px solid #f1d286;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 100;
+    }
+
+    /* Logo Deformada (Orb) */
+    .header-logo-orb {
+      position: absolute;
+      top: 0;
+      left: 30px;
+      width: 110px;
+      height: 120px;
+      background: radial-gradient(circle at 50% 100%, #760f0e 60%, #5a0807 100%);
+      border-radius: 0 0 55px 55px;
+      border-left: 1px solid #f1d286;
+      border-right: 1px solid #f1d286;
+      border-bottom: 3px solid #f1d286;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 15px;
+      z-index: 101;
+      transition: transform 0.3s ease;
+    }
+    
+    .header-logo-orb:hover { transform: translateY(5px); }
+
+    .header-logo-orb img {
+      height: 85px;
+      width: auto;
+      filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
+    }
+
+    /* Navegação empurrada para a direita */
+    nav { 
+      margin-left: 140px; 
+      display: flex; 
+      gap: 20px; 
+    }
+    nav a {
+      text-decoration: none;
+      color: #f8f8f8;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: all 0.2s;
+    }
+    nav a:hover { opacity: 1; color: #f1d286; }
+    nav a.active { opacity: 1; color: #f1d286; border-bottom: 2px solid #f1d286; padding-bottom: 2px; }
+    nav a {
+      text-decoration: none;
+      color: #f8f8f8;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: all 0.2s;
+    }
+    nav a:hover { opacity: 1; color: #f1d286; }
+    nav a.active { opacity: 1; color: #f1d286; border-bottom: 2px solid #f1d286; padding-bottom: 2px; }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    /* --- KPI BAR --- */
+    .dashboard-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(241, 210, 134, 0.3);
+      border-radius: 16px;
+      padding: 20px 40px;
+      margin-bottom: 20px;
+    }
+
+    .single-kpi {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .single-kpi.right-align {
+      align-items: flex-end;
+      text-align: right;
+    }
+
+    .kpi-label { 
+      font-size: 0.9rem; color: #ccc; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;
+      font-family: var(--brand-font);
+    }
+    
+    .kpi-value { 
+      font-size: 2.5rem; font-weight: bold; color: #f8f8f8; 
+      font-family: var(--brand-font);
+    }
+    
+    .kpi-sub { 
+      font-size: 0.85rem; color: #ccc; opacity: 0.7; margin-top: 5px;
+      font-family: var(--brand-font);
+    }
+
+    .text-gold { color: #f1d286; }
+
+    /* GRÁFICO DONUT (Container Central) */
+    .chart-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .legend-row {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 1rem; color: #ccc; text-transform: uppercase; font-weight: 600; }
+    .dot { width: 14px; height: 14px; border-radius: 50%; }
+
+    /* --- SEÇÃO DE DETALHAMENTO --- */
+    .content-section {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      border-left: 4px solid #f1d286;
+      padding-left: 15px;
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      color: #f1d286;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .section-tag {
+      font-size: 0.8rem;
+      color: #f8f8f8;
+      background: rgba(255,255,255,0.1);
+      padding: 5px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    /* LISTA DE UNIDADES */
+    .unit-row {
+      display: flex;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .unit-row:last-child { border-bottom: none; }
+
+    .unit-name { 
+      width: 25%; 
+      font-size: 1.1rem; 
+      font-weight: 600; 
+      color: #f8f8f8;
+    }
+
+    .dot-chart-container {
+      flex: 1;
+      height: 60px;
+      margin: 0 20px;
+      position: relative;
+    }
+
+    .unit-values {
+      width: 20%;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .val-total { font-size: 1rem; color: #ccc; margin-bottom: 2px; }
+    .val-ads { font-size: 1.2rem; color: #f1d286; font-weight: bold; }
+    
+    /* Efeito de profundidade para vendas orgânicas */
+    circle.organic-dot {
+      filter: blur(0.8px);
+    }
+
+    @keyframes cosmic-drift {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(3px, -4px); }
+      50% { transform: translate(-2px, 3px); }
+      75% { transform: translate(4px, 2px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    .floating-dot {
+      animation-name: cosmic-drift;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+    }
+
+    /* Animação Jelly (Inspirado em resultados.html) */
+    /* Animação Jelly Ajustada (Rápida e Sutil) */
+    @keyframes jelly-hit {
+      0%   { transform: scale(1, 1); }
+      15%  { transform: scale(1.03, 0.97); } /* Ataque rápido (15%) e sutil (3%) */
+      30%  { transform: scale(0.98, 1.02); }
+      45%  { transform: scale(1.01, 0.99); }
+      60%  { transform: scale(0.99, 1.01); }
+      100% { transform: scale(1, 1); }
+    }
+
+    .jelly-effect {
+      animation: jelly-hit 0.4s ease-out; /* Duração curta para resposta imediata */
+      transform-origin: center bottom;
+      transform-box: fill-box;
+    }
+    
+    /* Melhoria visual para barras */
+    .bar-rect {
+      transition: filter 0.2s, opacity 0.2s;
+      cursor: pointer;
+    }
+    .bar-rect:hover {
+      filter: brightness(1.1); /* Brilho mais sutil (era 1.2) */
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-logo-orb">
+      <img src="SVG/UaiLogoNoite.svg" alt="Atlas System v1.0">
+    </div>
+    <nav>
+      <a href="index.html">Visão Geral</a>
+      <a href="resultados.html">Anúncios</a>
+      <a href="conteudo.html">Conteúdo</a>
+      <a href="visibilidade.html">Visibilidade</a>
+      <a href="operacao.html">Operação</a>
+      <a href="vendas.html" class="active">Vendas</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <div class="page-header">
+      <h2 style="color: #f8f8f8; font-size: 2.4rem; margin: 0 0 20px 0;">Resumo de Vendas</h2>
+    </div>
+
+    <div class="dashboard-controls" style="justify-content: space-between; gap: 40px;">
+      <div class="single-kpi">
+        <span class="kpi-label">Faturamento Total</span>
+        <span class="kpi-value">R$ 124.500</span>
+        <span class="kpi-sub">Soma de todas as unidades</span>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div id="donut-chart"></div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="legend-item"><div class="dot" style="background: #f1d286;"></div> Via Ads</div>
+          <div class="legend-item"><div class="dot" style="background: rgba(255,255,255,0.3);"></div> Orgânico</div>
+        </div>
+      </div>
+
+      <div class="single-kpi right-align">
+        <span class="kpi-label">Faturamento Rastreado</span>
+        <span class="kpi-value" style="color: #f1d286;">R$ 2.001</span>
+        <span class="kpi-sub">30,6% de representatividade</span>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Performance por Canal</h2>
+        <span class="section-tag">Análise de Conversão</span>
+      </div>
+
+      <div class="unit-row">
+        <div class="unit-name">Lojas Físicas</div>
+        <div id="chart-lojas" class="dot-chart-container"></div>
+        <div class="unit-values">
+          <span class="val-ads">R$ 0</span>
+          <span class="val-total">de R$ 0</span>
+        </div>
+      </div>
+
+      <div class="unit-row">
+        <div class="unit-name">Distribuidora</div>
+        <div id="chart-distribuidora" class="dot-chart-container"></div>
+        <div class="unit-values">
+          <span class="val-ads">R$ 2.001</span>
+          <span class="val-total">de R$ 2.001</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="NAJA® Scope/NAJA® Scope.js"></script>
+
+  <script>
+    // --- RENDER DONUT CHART ---
+    function renderDonut() {
+      const width = 120;
+      const height = 120;
+      const margin = 10;
+      const radius = Math.min(width, height) / 2 - margin;
+
+      d3.select("#donut-chart").selectAll("*").remove();
+
+      const svg = d3.select("#donut-chart")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", `translate(${width / 2},${height / 2})`);
+
+      const data = { a: 38200, b: (124500 - 38200) }; 
+      const color = d3.scaleOrdinal().domain(["a", "b"]).range(["#f1d286", "rgba(255,255,255,0.1)"]);
+      const pie = d3.pie().value(d => d[1]).sort(null);
+      const data_ready = pie(Object.entries(data));
+      const arc = d3.arc().innerRadius(radius * 0.65).outerRadius(radius);
+
+      svg.selectAll('path')
+        .data(data_ready)
+        .join('path')
+        .attr('d', arc)
+        .attr('fill', d => color(d.data[0]))
+        .attr("stroke", "none");
+      
+      svg.append("text").attr("text-anchor", "middle").attr("dy", "5px")
+        .text("30%")
+        .style("fill", "#f1d286").style("font-size", "20px").style("font-weight", "bold").style("font-family", "var(--brand-font)");
+    }
+
+    // --- RENDER UNIT DOTS COM FÍSICA DE FUMAÇA ---
+    window.unitTimers = [];
+
+    function renderUnitDots(containerId, totalVal, adsVal) {
+      const container = d3.select(containerId);
+      if (container.empty()) return;
+
+      const maxDots = Math.max(50, Math.floor(totalVal / 250));
+      const ratio = Math.min(1, Math.max(0, adsVal / totalVal));
+      const numGold = Math.round(maxDots * ratio);
+      const numNeutral = maxDots - numGold;
+      
+      const dataTypes = [];
+      for (let i = 0; i < numGold; i++) dataTypes.push('ads');
+      for (let i = 0; i < numNeutral; i++) dataTypes.push('organic');
+      for (let i = dataTypes.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [dataTypes[i], dataTypes[j]] = [dataTypes[j], dataTypes[i]];
+      }
+
+      const width = Math.max(container.node().clientWidth, 200);
+      const height = Math.max(container.node().clientHeight, 60);
+      
+      container.selectAll("*").remove();
+      const svg = container.append("svg").attr("width", width).attr("height", height);
+
+      const particles = dataTypes.map((type, i) => {
+        const bx = Math.random() * (width - 6) + 3;
+        const by = Math.random() * (height - 6) + 3;
+        return {
+          id: i,
+          type: type,
+          baseX: bx,
+          baseY: by,
+          x: bx,
+          y: by,
+          vx: 0,
+          vy: 0
+        };
+      });
+
+      particles.sort((a, b) => (a.type === 'ads') ? 1 : -1);
+
+      const circles = svg.selectAll("circle")
+        .data(particles)
+        .join("circle")
+        .classed("organic-dot", d => d.type === 'organic')
+        .classed("floating-dot", true) 
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y)
+        .attr("r", 2.2)
+        .attr("fill", d => d.type === 'ads' ? '#f0c968' : '#f8f8f8')
+        .attr("opacity", d => d.type === 'ads' ? 1 : 0.3)
+        .style("animation-duration", d => {
+          const min = d.type === 'ads' ? 3 : 6;
+          const max = d.type === 'ads' ? 6 : 12;
+          return `${Math.random() * (max - min) + min}s`;
+        })
+        .style("animation-delay", () => `-${Math.random() * 5}s`)
+        .style("animation-direction", () => {
+          const directions = ['normal', 'reverse', 'alternate', 'alternate-reverse'];
+          return directions[Math.floor(Math.random() * directions.length)];
+        });
+
+      circles.each(function(d) { d.element = this; });
+
+      // --- MOTOR DE FÍSICA ---
+      let mouse = { x: -1000, y: -1000 };
+      let lagMouse = { x: -1000, y: -1000 };
+
+      const REPEL_RADIUS = 40;
+      const REPEL_FORCE_BASE = 0.2;
+      const FRICTION = 0.85;
+      const RETURN_FORCE = 0.005;
+      const LAG_FACTOR = 0.15;
+
+      svg.on("mouseenter", function(event) {
+        const [mx, my] = d3.pointer(event, this);
+        mouse.x = mx;
+        mouse.y = my;
+        lagMouse.x = mx;
+        lagMouse.y = my;
+      });
+
+      svg.on("mousemove", function(event) {
+        const [mx, my] = d3.pointer(event, this);
+        mouse.x = mx;
+        mouse.y = my;
+      });
+
+      svg.on("mouseleave", function() {
+        mouse.x = -1000;
+        mouse.y = -1000;
+      });
+
+      const timer = d3.timer(() => {
+        if (mouse.x === -1000) {
+            lagMouse.x += (-1000 - lagMouse.x) * 0.1;
+            lagMouse.y += (-1000 - lagMouse.y) * 0.1;
+        } else {
+            lagMouse.x += (mouse.x - lagMouse.x) * LAG_FACTOR;
+            lagMouse.y += (mouse.y - lagMouse.y) * LAG_FACTOR;
+        }
+
+        const dxMouse = mouse.x - lagMouse.x;
+        const dyMouse = mouse.y - lagMouse.y;
+        let moveIntensity = Math.sqrt(dxMouse*dxMouse + dyMouse*dyMouse) / 15; 
+        
+        if (moveIntensity > 4) moveIntensity = 4;
+        if (moveIntensity < 0.1) moveIntensity = 0; 
+
+        particles.forEach(p => {
+          const dx = p.x - lagMouse.x;
+          const dy = p.y - lagMouse.y;
+          const distSq = dx*dx + dy*dy;
+
+          if (moveIntensity > 0 && distSq < REPEL_RADIUS * REPEL_RADIUS) {
+            const dist = Math.sqrt(distSq);
+            const force = (REPEL_RADIUS - dist) / REPEL_RADIUS;
+            const angle = Math.atan2(dy, dx);
+            
+            const totalForce = force * REPEL_FORCE_BASE * moveIntensity;
+
+            p.vx += Math.cos(angle) * totalForce;
+            p.vy += Math.sin(angle) * totalForce;
+          }
+
+          const homeDx = p.baseX - p.x;
+          const homeDy = p.baseY - p.y;
+          p.vx += homeDx * RETURN_FORCE;
+          p.vy += homeDy * RETURN_FORCE;
+
+          p.vx *= FRICTION;
+          p.vy *= FRICTION;
+
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (Math.abs(p.vx) > 0.001 || Math.abs(p.vy) > 0.001 || Math.abs(p.x - p.baseX) > 0.1) {
+             d3.select(p.element).attr("cx", p.x).attr("cy", p.y);
+          }
+        });
+      });
+
+      window.unitTimers.push(timer);
+    }
+
+    function renderAllUnitDots() {
+      if (window.unitTimers) {
+        window.unitTimers.forEach(t => t.stop());
+        window.unitTimers = [];
+      }
+      renderUnitDots("#chart-lojas", 0, 0);
+      renderUnitDots("#chart-distribuidora", 2001, 2001);
+    }
+
+    // INIT
+    renderDonut();
+    renderAllUnitDots();
+    
+    window.addEventListener('resize', () => {
+      renderDonut();
+      renderAllUnitDots();
+    });
+  </script>
+</body>
+</html>

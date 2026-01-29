@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uai Dashboard</title>
+  <link rel="stylesheet" href="https://use.typekit.net/lvv6fgs.css">
+  <style>
+    :root {
+      --brand-font: 'omnes-variable', 'Segoe UI', system-ui, sans-serif;
+      font-family: var(--brand-font);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    
+    body {
+      background-color: #760f0e; /* Vinho */
+      color: #f8f8f8;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    /* --- NOVO HEADER ORB (Medalhão) --- */
+    header {
+      padding: 0.5rem 2rem;
+      height: 70px;
+      background-color: #760f0e;
+      border-bottom: 1px solid #f1d286;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 100;
+    }
+
+    /* Logo Deformada (Orb) */
+    .header-logo-orb {
+      position: absolute;
+      top: 0;
+      left: 30px;
+      width: 110px;
+      height: 120px;
+      background: radial-gradient(circle at 50% 100%, #760f0e 60%, #5a0807 100%);
+      border-radius: 0 0 55px 55px;
+      border-left: 1px solid #f1d286;
+      border-right: 1px solid #f1d286;
+      border-bottom: 3px solid #f1d286;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 15px;
+      z-index: 101;
+      transition: transform 0.3s ease;
+    }
+    
+    .header-logo-orb:hover { transform: translateY(5px); }
+
+    .header-logo-orb img {
+      height: 85px;
+      width: auto;
+      filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
+    }
+
+    /* Navegação empurrada para a direita */
+    nav { 
+      margin-left: 140px; 
+      display: flex; 
+      gap: 20px; 
+    }
+    nav a {
+      text-decoration: none;
+      color: #f8f8f8;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: all 0.2s;
+    }
+    nav a:hover { opacity: 1; color: #f1d286; }
+    nav a.active { opacity: 1; color: #f1d286; border-bottom: 2px solid #f1d286; padding-bottom: 2px; }
+    nav a {
+      text-decoration: none;
+      color: #f8f8f8;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: all 0.2s;
+    }
+    nav a:hover { opacity: 1; color: #f1d286; }
+    nav a.active { opacity: 1; color: #f1d286; border-bottom: 2px solid #f1d286; padding-bottom: 2px; }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    /* CONTROLE SUPERIOR (KPI + FILTRO) */
+    .dashboard-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+      flex-wrap: wrap;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(241, 210, 134, 0.3);
+      border-radius: 16px;
+      padding: 20px 30px;
+    }
+
+    .single-kpi {
+      display: flex;
+      flex-direction: column;
+    }
+    .kpi-label { 
+      font-size: 0.9rem; color: #ccc; text-transform: uppercase; letter-spacing: 0.5px; 
+      font-family: var(--brand-font);
+    }
+    .kpi-value { 
+      font-size: 2.5rem; font-weight: bold; color: #f1d286; margin: 5px 0; 
+      font-family: var(--brand-font);
+    }
+    .kpi-sub { 
+      font-size: 0.85rem; color: #ccc; opacity: 0.7; 
+      font-family: var(--brand-font);
+    }
+
+    /* FILTRO SWITCH */
+    .filter-group {
+      display: flex;
+      gap: 10px;
+      background: rgba(255,255,255,0.05);
+      padding: 5px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: none;
+      color: #ccc;
+      padding: 10px 25px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 650;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      font-family: var(--brand-font);
+    }
+    .filter-btn:hover { color: #fff; }
+    .filter-btn.active {
+      background: #f1d286;
+      color: #760f0e;
+      box-shadow: 0 2px 10px rgba(241, 210, 134, 0.2);
+    }
+
+    /* SEÇÕES DE GRÁFICOS */
+    .chart-section {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      padding: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-left: 4px solid #f1d286;
+      padding-left: 15px;
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      color: #f1d286;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    /* ESTILOS SVG/D3 */
+    .axis text { fill: #ccc; font-size: 12px; font-family: var(--brand-font); }
+    .axis path, .axis line { stroke: rgba(255,255,255,0.1); }
+    .value-label { font-family: var(--brand-font); font-weight: 700; }
+    
+    /* Area Chart */
+    .area-path {
+      fill: url(#gradient-area);
+      stroke: none;
+    }
+    
+    /* Funnel Bars */
+    .funnel-bar { fill: #f8f8f8; rx: 6; opacity: 0.15; transition: all 0.3s; }
+    .funnel-bar:hover { opacity: 0.25; }
+    .funnel-label { fill: #f8f8f8; font-size: 14px; font-weight: 600; font-family: var(--brand-font); }
+
+    /* Animação de Flutuação (Cosmic Drift) - Portado de vendas.html */
+    @keyframes cosmic-drift {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(2px, -3px); }
+      50% { transform: translate(-2px, 2px); }
+      75% { transform: translate(3px, 1px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    .floating-dot {
+      animation-name: cosmic-drift;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      /* A duração, delay e direção serão injetados via JS para aleatoriedade */
+    }
+    /* EFEITOS DE INTERAÇÃO (Portado de resultados.html) */
+    .active-dot {
+      opacity: 1 !important;
+      fill: #ffffff !important;
+      filter: drop-shadow(0 0 8px rgba(241, 210, 134, 0.8));
+      stroke: #fff !important;
+      stroke-width: 3px;
+      r: 7px !important;
+      transition: all 0.15s ease-out;
+      cursor: crosshair;
+    }
+
+    .glow-path {
+      filter: blur(3px);
+      stroke: #ffffff;
+      stroke-width: 5px;
+      stroke-linecap: round;
+      opacity: 1;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-logo-orb">
+      <img src="SVG/UaiLogoNoite.svg" alt="Atlas System v1.0">
+    </div>
+    <nav>
+      <a href="index.html">Visão Geral</a>
+      <a href="resultados.html">Anúncios</a>
+      <a href="conteudo.html">Conteúdo</a>
+      <a href="visibilidade.html" class="active">Visibilidade</a>
+      <a href="operacao.html">Operação</a>
+      <a href="vendas.html">Vendas</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <div class="page-header">
+      <h2 style="color: #f8f8f8; font-size: 2.4rem; margin: 0 0 20px 0;">Visibilidade da Marca</h2>
+    </div>
+
+    <div class="dashboard-controls">
+      <div class="single-kpi">
+        <span class="kpi-label">Contas Alcançadas</span>
+        <span class="kpi-value" id="kpi-reach-total">--</span>
+        <span class="kpi-sub">Pessoas únicas impactadas no período</span>
+      </div>
+      <div class="single-kpi">
+        <span class="kpi-label">Impressões</span>
+        <span class="kpi-value" id="kpi-impressions-total">--</span>
+        <span class="kpi-sub">Total de exposições do conteúdo</span>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <div class="section-header">
+        <h2 class="section-title">Evolução do Alcance Semanal</h2>
+      </div>
+      <div id="reach-chart" style="width: 100%; height: 350px;"></div>
+    </div>
+
+    <div class="chart-section">
+      <div class="section-header">
+        <h2 class="section-title">Funil de Conversão de Marca</h2>
+      </div>
+      <div id="funnel-chart" style="width: 100%; height: 300px;"></div>
+    </div>
+
+  </main>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="NAJA® Scope/NAJA® Scope.js"></script>
+
+  <script>
+    const DATA_UNIFIED = {
+      totalReach: 40108,
+      totalImpressions: 97380,
+      reachTrend: [
+        { week: '19/11 - 25/11', value: 3536 },
+        { week: '26/11 - 02/12', value: 3165 },
+        { week: '03/12 - 09/12', value: 5454 },
+        { week: '10/12 - 16/12', value: 8867 },
+        { week: '17/12 - 23/12', value: 12495 },
+        { week: '24/12 - 30/12', value: 13125 },
+        { week: '31/12 - 06/01', value: 12562 }
+      ],
+      funnel: [
+        { step: "Impressões Totais", value: 97380 },
+        { step: "Contas Alcançadas", value: 40108 },
+        { step: "Visitas ao Perfil", value: 985 },
+        { step: "Novos Seguidores", value: 142 }
+      ]
+    };
+
+    const COLORS = { gold: "#f1d286", deep: "#760f0e", bar: "#f8f8f8" };
+
+    function formatThousands(value) {
+      if (value == null) return '-';
+      return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 }).format(value);
+    }
+
+    document.getElementById('kpi-reach-total').innerText = formatThousands(DATA_UNIFIED.totalReach);
+    document.getElementById('kpi-impressions-total').innerText = formatThousands(DATA_UNIFIED.totalImpressions);
+
+    function renderReachChart() {
+      const container = document.getElementById('reach-chart');
+      d3.select("#reach-chart").selectAll("*").remove();
+      const width = container.offsetWidth;
+      const height = container.offsetHeight;
+      const margin = { top: 30, right: 30, bottom: 40, left: 50 };
+      const maskId = "mask-reach";
+      
+      const svg = d3.select("#reach-chart").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+      const data = DATA_UNIFIED.reachTrend;
+
+      const x = d3.scalePoint()
+        .domain(data.map(d => d.week))
+        .range([margin.left, width - margin.right]);
+        
+      const y = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.value) * 1.3])
+        .range([height - margin.bottom, margin.top]);
+
+      const defs = svg.append("defs");
+      const gradient = defs.append("linearGradient").attr("id", "gradient-area").attr("x1", "0%").attr("y1", "0%").attr("x2", "0%").attr("y2", "100%");
+      gradient.append("stop").attr("offset", "0%").attr("stop-color", "#f8f8f8").attr("stop-opacity", 0.25);
+      gradient.append("stop").attr("offset", "100%").attr("stop-color", "#f8f8f8").attr("stop-opacity", 0.0);
+
+      const mask = defs.append("mask").attr("id", maskId);
+      mask.append("rect").attr("x", 0).attr("y", 0).attr("width", width).attr("height", height).attr("fill", "black");
+      const maskCircle = mask.append("circle")
+        .attr("cx", -100).attr("cy", -100).attr("r", 25)
+        .attr("fill", "white").attr("filter", "blur(8px)");
+
+      svg.append("g")
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x).tickSize(0).tickPadding(15))
+        .attr("class", "axis");
+
+      const area = d3.area().x(d => x(d.week)).y0(height - margin.bottom).y1(d => y(d.value)).curve(d3.curveMonotoneX);
+      svg.append("path").datum(data).attr("class", "area-path").attr("d", area);
+
+      const lineGen = d3.line()
+        .x(d => x(d.week))
+        .y(d => y(d.value))
+        .curve(d3.curveMonotoneX);
+
+      svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", COLORS.gold)
+        .attr("stroke-width", 3)
+        .attr("d", lineGen);
+
+      svg.append("path")
+        .datum(data)
+        .attr("class", "glow-path")
+        .attr("d", lineGen)
+        .attr("fill", "none")
+        .attr("mask", `url(#${maskId})`);
+
+      const circles = svg.selectAll("myCircles").data(data).join("circle")
+        .attr("fill", COLORS.deep)
+        .attr("stroke", COLORS.gold)
+        .attr("stroke-width", 2)
+        .attr("cx", d => x(d.week))
+        .attr("cy", d => y(d.value))
+        .attr("r", 5)
+        .style("pointer-events", "none");
+        
+      svg.selectAll("myLabels").data(data).join("text")
+        .attr("x", d => x(d.week)).attr("y", d => y(d.value) - 20)
+        .text(d => formatThousands(d.value)).attr("text-anchor", "middle")
+        .attr("fill", COLORS.gold).style("font-size", "22px").style("font-weight", "bold").style("font-family", "var(--brand-font)")
+        .style("pointer-events", "none");
+
+      svg.on("mousemove", function(event) {
+          const [mx, my] = d3.pointer(event, this);
+          maskCircle.attr("cx", mx).attr("cy", my);
+          let closestDist = Infinity;
+          let closestIdx = -1;
+
+          data.forEach((d, i) => {
+            const cx = x(d.week);
+            const dist = Math.abs(mx - cx);
+            if (dist < closestDist) {
+              closestDist = dist;
+              closestIdx = i;
+            }
+          });
+
+          if (closestDist < 30) {
+             circles.classed("active-dot", (_, i) => i === closestIdx);
+          } else {
+             circles.classed("active-dot", false);
+          }
+      })
+      .on("mouseleave", function() {
+          circles.classed("active-dot", false);
+          maskCircle.attr("cx", -200).attr("cy", -200);
+      });
+    }
+    function renderFunnelChart() {
+      const container = document.getElementById('funnel-chart');
+      d3.select("#funnel-chart").selectAll("*").remove();
+      const width = container.offsetWidth;
+      const height = container.offsetHeight;
+      const margin = { top: 40, right: 20, bottom: 40, left: 20 };
+
+      const svg = d3.select("#funnel-chart").append("svg").attr("width", width).attr("height", height);
+      const data = DATA_UNIFIED.funnel;
+      if (!data || !data.length) return;
+
+      const maxValue = d3.max(data, d => d.value) || 1;
+      const maxDots = 300;
+      const columnWidth = (width - margin.left - margin.right) / data.length;
+      const dotRadius = 3;
+      const labelOffset = 20;
+      const valueOffset = 30;
+      const gridStartY = margin.top + labelOffset;
+      const gridHeight = Math.max(0, height - gridStartY - margin.bottom - valueOffset);
+
+      let particles = [];
+
+      data.forEach((step, index) => {
+        const columnStartX = margin.left + columnWidth * index;
+        const count = Math.ceil((step.value / maxValue) * maxDots);
+
+        const group = svg.append("g").attr("transform", `translate(${columnStartX},0)`);
+
+        group.append("text")
+          .attr("x", columnWidth / 2).attr("y", margin.top - 10)
+          .attr("text-anchor", "middle").attr("fill", "#f8f8f8")
+          .style("font-size", "16px").style("font-weight", "600").style("font-family", "var(--brand-font)")
+          .style("letter-spacing", "0.5px")
+          .text(step.step);
+
+        const dotsData = Array.from({ length: count }, (_, idx) => {
+          const randX = (Math.random() * (columnWidth - 30)) + 15;
+          const randY = (Math.random() * (gridHeight - 10)) + 5;
+          const globalX = columnStartX + randX;
+          const globalY = gridStartY + randY;
+          
+          return {
+            id: idx,
+            baseX: randX,
+            baseY: randY,
+            x: randX,
+            y: randY,
+            globalBaseX: globalX,
+            globalBaseY: globalY,
+            vx: 0,
+            vy: 0
+          };
+        });
+
+        const dotGroup = group.append("g").attr("transform", `translate(0,${gridStartY})`);
+        const circles = dotGroup.selectAll("circle").data(dotsData).join("circle")
+          .attr("cx", d => d.x)
+          .attr("cy", d => d.y)
+          .attr("r", dotRadius)
+          .attr("fill", "#f8f8f8")
+          .attr("opacity", 0.6)
+          .classed("floating-dot", true)
+          .style("animation-duration", () => `${Math.random() * (8 - 4) + 4}s`)
+          .style("animation-delay", () => `-${Math.random() * 5}s`)
+          .style("animation-direction", () => {
+             const directions = ['normal', 'reverse', 'alternate', 'alternate-reverse'];
+             return directions[Math.floor(Math.random() * directions.length)];
+          });
+
+        circles.each(function(d) {
+          d.element = this;
+          particles.push(d);
+        });
+
+        group.append("text")
+          .attr("x", columnWidth / 2).attr("y", gridStartY + gridHeight + 45)
+          .attr("text-anchor", "middle").attr("fill", COLORS.gold)
+          .style("font-size", "18px").style("font-weight", "700").style("font-family", "var(--brand-font)")
+          .text(step.value.toLocaleString('pt-BR'));
+      });
+
+      // --- MOTOR FÍSICO "REAÇÃO A MOVIMENTO" (AJUSTE FINO) ---
+      let mouse = { x: -1000, y: -1000 };
+      let lagMouse = { x: -1000, y: -1000 };
+
+      // Configurações: Mais preciso e sutil
+      const REPEL_RADIUS = 60;      // Raio curto (era 100)
+      const REPEL_FORCE_BASE = 0.2; // Força sutil (era 0.5)
+      const FRICTION = 0.85;        // Mantém atrito para parar rápido
+      const RETURN_FORCE = 0.005;   // Retorno suave
+      const LAG_FACTOR = 0.15;      // Lag mantido
+
+      svg.on("mousemove", function(event) {
+        const [mx, my] = d3.pointer(event, this);
+        mouse.x = mx;
+        mouse.y = my;
+      });
+      
+      svg.on("mouseleave", function() {
+        mouse.x = -1000;
+        mouse.y = -1000;
+      });
+
+      const timer = d3.timer(() => {
+        // Atualiza Cursor Fantasma
+        if (mouse.x === -1000) {
+            lagMouse.x += (-1000 - lagMouse.x) * 0.1;
+            lagMouse.y += (-1000 - lagMouse.y) * 0.1;
+        } else {
+            lagMouse.x += (mouse.x - lagMouse.x) * LAG_FACTOR;
+            lagMouse.y += (mouse.y - lagMouse.y) * LAG_FACTOR;
+        }
+
+        // CALCULA VELOCIDADE DO MOUSE
+        const dxMouse = mouse.x - lagMouse.x;
+        const dyMouse = mouse.y - lagMouse.y;
+        
+        let moveIntensity = Math.sqrt(dxMouse*dxMouse + dyMouse*dyMouse) / 15; 
+        
+        // Limites de intensidade
+        if (moveIntensity > 4) moveIntensity = 4;
+        if (moveIntensity < 0.1) moveIntensity = 0; 
+
+        particles.forEach(p => {
+          const currentGlobalX = p.globalBaseX + (p.x - p.baseX);
+          const currentGlobalY = p.globalBaseY + (p.y - p.baseY);
+
+          // Repulsão baseada no rastro (LagMouse)
+          const dx = currentGlobalX - lagMouse.x;
+          const dy = currentGlobalY - lagMouse.y;
+          const distSq = dx*dx + dy*dy;
+
+          if (moveIntensity > 0 && distSq < REPEL_RADIUS * REPEL_RADIUS) {
+            const dist = Math.sqrt(distSq);
+            const force = (REPEL_RADIUS - dist) / REPEL_RADIUS;
+            const angle = Math.atan2(dy, dx);
+            
+            // Força modulada pela intensidade
+            const totalForce = force * REPEL_FORCE_BASE * moveIntensity;
+
+            p.vx += Math.cos(angle) * totalForce;
+            p.vy += Math.sin(angle) * totalForce;
+          }
+
+          // Retorno e Atrito
+          const homeDx = p.baseX - p.x;
+          const homeDy = p.baseY - p.y;
+          p.vx += homeDx * RETURN_FORCE;
+          p.vy += homeDy * RETURN_FORCE;
+
+          p.vx *= FRICTION;
+          p.vy *= FRICTION;
+
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (Math.abs(p.vx) > 0.001 || Math.abs(p.vy) > 0.001 || Math.abs(p.x - p.baseX) > 0.1) {
+             d3.select(p.element).attr("cx", p.x).attr("cy", p.y);
+          }
+        });
+      });
+    }
+    renderReachChart();
+    renderFunnelChart();
+    window.addEventListener('resize', () => {
+      renderReachChart();
+      renderFunnelChart();
+    });
+
+  </script>
+</body>
+</html>
