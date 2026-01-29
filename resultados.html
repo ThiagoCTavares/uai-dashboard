@@ -369,34 +369,6 @@
       <div id="chart-cpm" class="chart-box"></div>
     </div>
 
-    <div class="chart-section">
-      <div class="section-header">
-        <h2 class="section-title">O multiplicador do seu dinheiro</h2>
-        <div class="tag-container">
-          <span class="section-tag">ROAS (Retorno Bruto)</span>
-        </div>
-      </div>
-      <div id="chart-roas" class="chart-box"></div>
-      <div class="warning-badge" title="Integração de dados pendente com time comercial">
-        <span class="badge-icon">⚠</span>
-        <span class="badge-text">Problema em obter dados</span>
-      </div>
-    </div>
-
-    <div class="chart-section">
-      <div class="section-header">
-        <h2 class="section-title">A margem real de lucro</h2>
-        <div class="tag-container">
-          <span class="section-tag">ROI (Retorno Líquido)</span>
-        </div>
-      </div>
-      <div id="chart-roi" class="chart-box"></div>
-      <div class="warning-badge" title="Integração de dados pendente com time comercial">
-        <span class="badge-icon">⚠</span>
-        <span class="badge-text">Problema em obter dados</span>
-      </div>
-    </div>
-
   </main>
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -713,13 +685,6 @@
          }
       });
 
-      renderChart('#chart-roas', currentData.roas, {
-         format: val => val + "x"
-      });
-
-      renderChart('#chart-roi', currentData.roi, {
-         format: val => val + "%"
-      });
     }
 
     // Init

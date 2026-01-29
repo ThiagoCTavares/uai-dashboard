@@ -370,7 +370,7 @@
     <div class="dashboard-controls" style="justify-content: space-between; gap: 40px;">
       <div class="single-kpi">
         <span class="kpi-label">Faturamento Total</span>
-        <span class="kpi-value">R$ 124.500</span>
+        <span class="kpi-value">?</span>
         <span class="kpi-sub">Soma de todas as unidades</span>
       </div>
 
@@ -442,8 +442,8 @@
         .append("g")
         .attr("transform", `translate(${width / 2},${height / 2})`);
 
-      const data = { a: 38200, b: (124500 - 38200) }; 
-      const color = d3.scaleOrdinal().domain(["a", "b"]).range(["#f1d286", "rgba(255,255,255,0.1)"]);
+      const data = { a: 1, b: 1 };
+      const color = d3.scaleOrdinal().domain(["a", "b"]).range(["rgba(241,210,134,0.4)", "rgba(255,255,255,0.2)"]);
       const pie = d3.pie().value(d => d[1]).sort(null);
       const data_ready = pie(Object.entries(data));
       const arc = d3.arc().innerRadius(radius * 0.65).outerRadius(radius);
@@ -453,10 +453,11 @@
         .join('path')
         .attr('d', arc)
         .attr('fill', d => color(d.data[0]))
-        .attr("stroke", "none");
+        .attr("stroke", "none")
+        .style("opacity", 0.6);
       
       svg.append("text").attr("text-anchor", "middle").attr("dy", "5px")
-        .text("30%")
+        .text("?")
         .style("fill", "#f1d286").style("font-size", "20px").style("font-weight", "bold").style("font-family", "var(--brand-font)");
     }
 
