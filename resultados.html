@@ -109,15 +109,30 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(241, 210, 134, 0.3);
-      border-radius: 16px;
-      padding: 20px 30px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .kpi-group {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
     }
 
     .single-kpi {
       display: flex;
       flex-direction: column;
+    }
+    .kpi-card {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(241, 210, 134, 0.3);
+      border-radius: 16px;
+      padding: 16px 20px;
+      min-width: 240px;
     }
     .kpi-label { font-size: 0.9rem; color: #ccc; text-transform: uppercase; letter-spacing: 0.5px; font-family: var(--brand-font); }
     .kpi-value { font-size: 2.5rem; font-weight: bold; color: #f1d286; margin: 5px 0; font-family: var(--brand-font); }
@@ -323,14 +338,13 @@
     <div class="header-logo-orb">
       <img src="SVG/UaiLogoNoite.svg" alt="Atlas System v1.0">
     </div>
-    <nav>
-      <a href="index.html">Visão Geral</a>
-      <a href="resultados.html" class="active">Anúncios</a>
-      <a href="conteudo.html">Conteúdo</a>
+        <nav>
       <a href="visibilidade.html">Visibilidade</a>
-      <a href="operacao.html">Operação</a>
+      <a href="resultados.html" class="active">Anúncios</a>
       <a href="vendas.html">Vendas</a>
+      <a href="operacao.html">Operação</a>
       <a href="planoDeAcao.html">Plano de Ação</a>
+      <a href="conteudo.html">Conteúdo</a>
     </nav>
   </header>
 
@@ -341,10 +355,17 @@
     </div>
 
     <div class="dashboard-controls">
-      <div class="single-kpi">
-        <span class="kpi-label">Investimento Total</span>
-        <span class="kpi-value" id="display-investment">R$ --</span>
-        <span class="kpi-sub">Valor aplicado no período (19 Nov - 06 Jan)</span>
+      <div class="kpi-group">
+        <div class="single-kpi kpi-card">
+          <span class="kpi-label">Vendas via Ads</span>
+          <span class="kpi-value" id="display-ads-sales">R$ --</span>
+          <span class="kpi-sub">Receita atribuída aos anúncios</span>
+        </div>
+        <div class="single-kpi kpi-card">
+          <span class="kpi-label">Investimento Total</span>
+          <span class="kpi-value" id="display-investment">R$ --</span>
+          <span class="kpi-sub">Valor aplicado no período (19 Nov - 06 Jan)</span>
+        </div>
       </div>
 
       <div class="filter-group">
@@ -378,7 +399,8 @@
     // --- DADOS (SIMULADOS) PARA OS DOIS CENÁRIOS ---
     const DB = {
       loja: {
-        investment: "R$ 345,46",
+        investment: "R$ 345",
+        adsSales: "R$ ?",
         cpc: [
           { label: '19/11 - 25/11', clicks: 144, val: 0.83 },
           { label: '26/11 - 02/12', clicks: 36, val: 2.42 },
@@ -414,7 +436,8 @@
         metaCpa: 40.00
       },
       revenda: {
-        investment: "R$ 1.540,59", // Investimento menor no B2B/Revenda
+        investment: "R$ 1.540", // Investimento menor no B2B/Revenda
+        adsSales: "R$ 2.001",
         cpc: [ // CPC mais caro (B2B costuma ser)
           { label: '19/11 - 25/11', clicks: null, val: null },
           { label: '26/11 - 02/12', clicks: null, val: null },
@@ -476,6 +499,7 @@
       
       // Atualiza KPI
       document.getElementById('display-investment').innerText = currentData.investment;
+      document.getElementById('display-ads-sales').innerText = currentData.adsSales;
 
       // Re-renderiza gráficos
       renderAllCharts();
