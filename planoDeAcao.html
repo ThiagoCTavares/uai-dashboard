@@ -207,6 +207,7 @@
       margin-top: 10px;
     }
     .budget-col h4 { color: #f1d286; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; }
+    .budget-title { font-weight: 600; }
     .budget-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .budget-total { margin-top: 20px; padding-top: 20px; border-top: 1px solid #f1d286; font-size: 1.4rem; font-weight: bold; text-align: right; color: #f1d286; }
 
@@ -231,7 +232,7 @@
   <main>
 
     <div class="page-header">
-      <h2>Plano de Ação UAI - Call CEO</h2>
+      <h2>Plano de Ação</h2>
     </div>
 
     <div class="dashboard-controls">
@@ -251,7 +252,7 @@
 
       <div class="issue-card">
         <div class="issue-header">
-          <span class="issue-title">#FOCO 1 - Organizar Calendário</span>
+          <span class="issue-title">FOCO 1 - Organizar Calendário</span>
           <span class="issue-tag status-running">Em Andamento</span>
         </div>
         <ul class="plan-list">
@@ -264,7 +265,7 @@
 
       <div class="issue-card">
         <div class="issue-header">
-          <span class="issue-title">#FOCO 2 - Frontes do Orçamento</span>
+          <span class="issue-title">FOCO 2 - Frontes do Orçamento</span>
           <span class="issue-tag status-running">Em Andamento</span>
         </div>
         <ul class="plan-list">
@@ -276,14 +277,11 @@
           </li>
           <li><strong>Não é exclusividade:</strong> A divisão refere-se ao orçamento de campanha. Conteúdos orgânicos serão gerais (marca, viralização).</li>
         </ul>
-        <div class="highlight-box">
-          "Até agora, nossos testes indicaram..." @Arthur Ricon
-        </div>
       </div>
 
       <div class="issue-card">
         <div class="issue-header">
-          <span class="issue-title">#FOCO 3 - Pós Anúncio</span>
+          <span class="issue-title">FOCO 3 - Pós Anúncio</span>
           <span class="issue-tag status-running">Em Andamento</span>
         </div>
         <ul class="plan-list">
@@ -297,7 +295,7 @@
 
       <div class="issue-card">
         <div class="issue-header">
-          <span class="issue-title">#FOCO 4 - Inovações</span>
+          <span class="issue-title">FOCO 4 - Inovações</span>
           <span class="issue-tag status-waiting">A Iniciar (Próx. Ciclo)</span>
         </div>
         <ul class="plan-list">
@@ -321,23 +319,29 @@
 
       <div class="issue-card" style="border-color: rgba(241, 210, 134, 0.4);">
         <div class="issue-header">
-          <span class="issue-title">## Proposta Orçamentária (Fev)</span>
+          <span class="issue-title">Proposta Orçamentária (Fev)</span>
         </div>
         
         <div class="budget-section">
           <div class="budget-col">
-            <h4>Serviços</h4>
+            <h4 class="budget-title">Serviços</h4>
             <div class="issue-desc" style="font-size: 0.9rem;">
-              Tráfego pago, gestão de conteúdo (Instagram), GMB profile, auxílio na consultoria de prospecção, Captação, edição e criação audiovisual.
+              <ul class="plan-list" style="margin: 5px 0 0 0; padding-left: 18px;">
+                <li>Tráfego pago</li>
+                <li>Gestão de conteúdo (Instagram)</li>
+                <li>GMB profile</li>
+                <li>Consultoria de prospecção</li>
+                <li>Captação, edição e criação audiovisual</li>
+              </ul>
             </div>
             <div class="budget-row" style="margin-top: 15px;">
-              <span>Total Serviços</span>
-              <span style="color: #f1d286;">R$ 1.600,00 + XXX</span>
+              <span style="font-weight: 600;">Total Serviços</span>
+              <span style="color: #f1d286; font-weight: 700;">R$ 1.600,00 + R$ 1.000,00</span>
             </div>
           </div>
 
           <div class="budget-col">
-            <h4>Verba de Campanha (Mídia)</h4>
+            <h4 class="budget-title">Verba de Campanha (Mídia)</h4>
             <div class="budget-row">
               <span>Lojas Físicas</span>
               <span>R$ 1.000,00</span>
@@ -350,7 +354,7 @@
         </div>
 
         <div class="budget-total">
-          TOTAL ESTIMADO: R$ 4.100,00 + XXX
+          TOTAL ESTIMADO: R$ 5.100,00
         </div>
       </div>
 
