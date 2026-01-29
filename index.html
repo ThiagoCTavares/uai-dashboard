@@ -258,52 +258,81 @@
       50% { transform: translate(10px, -10px); }
       100% { transform: translate(0,0); }
     }
+  </style>
   
+  
+  
+  
+  <style media="print">
     /* --- CONFIGURAÇÃO PARA PDF DIGITAL (Dark Mode) --- */
-    @media print {
-      /* 1. Força o navegador a MANTER o fundo colorido e gráficos */
-      body {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        background-color: #760f0e !important; /* Fundo Vinho Obrigatório */
-        color: #f8f8f8 !important; /* Texto Claro */
-      }
+    @page { size: A4; margin: 12mm; }
 
-      /* 2. Remove apenas elementos de interface que não funcionam em PDF */
-      #atlas-guide,        /* Widget de Cores */
-      #atlas-guide-toggle, /* Botão do Widget */
-      .filter-group,       /* Botões de Filtro (Loja/Revenda) */
-      .shortcut-btn .arrow-icon, /* Setas de link */
-      .warning-badge {     /* Alertas flutuantes */
-        display: none !important;
-      }
-
-      /* 3. Garante que os Cards não sejam cortados ao meio na quebra de página */
-      .kpi-card, .issue-card, .chart-section, .content-section, .single-kpi, .budget-section {
-        break-inside: avoid;
-        page-break-inside: avoid;
-      }
-
-      /* 4. Ajustes de Layout para PDF */
-      main { 
-        width: 100% !important; 
-        max-width: none !important; 
-        margin: 0 !important; 
-        padding: 20px !important;
-      }
-      
-      header {
-        position: static; /* Solta o header para não cobrir conteúdo */
-        border-bottom: 2px solid #f1d286;
-      }
-      
-      /* Mantém a logo Orb visível e bonita */
-      .header-logo-orb {
-        position: absolute !important; 
-        box-shadow: none !important; /* Remove sombra pesada no PDF */
-      }
+    /* 0. Força o navegador a respeitar as cores em todos os elementos */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      box-shadow: none !important; /* Evita sombras pesadas no PDF */
+      text-shadow: none !important;
     }
-</style>
+
+    /* 1. Força o navegador a MANTER o fundo colorido e gráficos */
+    html, body {
+      background-color: #760f0e !important; /* Fundo Vinho Obrigatório */
+      color: #f8f8f8 !important; /* Texto Claro */
+    }
+
+    /* 2. Remove apenas elementos de interface que não funcionam em PDF */
+    #atlas-guide,        /* Widget de Cores */
+    #atlas-guide-toggle, /* Botão do Widget */
+    .filter-group,       /* Botões de Filtro (Loja/Revenda) */
+    .shortcut-btn .arrow-icon, /* Setas de link */
+    .warning-badge {     /* Alertas flutuantes */
+      display: none !important;
+    }
+
+    /* 2.1 Remove a logo do header no modo impressão */
+    .header-logo-orb,
+    .header-logo-orb * {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+      max-width: 0 !important;
+      max-height: 0 !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* 3. Garante que os Cards não sejam cortados ao meio na quebra de página */
+    .kpi-card, .issue-card, .chart-section, .content-section, .single-kpi, .budget-section {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    /* 4. Ajustes de Layout para PDF */
+    main { 
+      width: 100% !important; 
+      max-width: none !important; 
+      margin: 0 !important; 
+      padding: 18px !important;
+    }
+    
+    header {
+      position: static !important; /* Solta o header para não cobrir conteúdo */
+      background-color: #760f0e !important;
+      border-bottom: 2px solid #f1d286;
+      height: auto !important;
+      padding: 10px 0 12px !important;
+    }
+
+    nav a { color: #f8f8f8 !important; }
+  </style>
+
+
+
+
+
 </head>
 <body>
 
@@ -646,6 +675,17 @@
       container.scrollLeft += direction * scrollSpeed;
       animationId = requestAnimationFrame(() => loopScroll(direction));
     }
+  </script>
+
+  <script>
+    (function () {
+      var logo = document.querySelector('.header-logo-orb');
+      if (!logo) return;
+      function hideLogo() { logo.style.display = 'none'; }
+      function showLogo() { logo.style.display = ''; }
+      window.addEventListener('beforeprint', hideLogo);
+      window.addEventListener('afterprint', showLogo);
+    })();
   </script>
 </body>
 </html>
